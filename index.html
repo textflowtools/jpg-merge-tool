@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JPG合併工具</title>
+
+<style>
+body {
+  font-family: "Noto Sans TC", sans-serif;
+  max-width: 760px;
+  margin: auto;
+  padding: 24px;
+  background: #FAFAFA;
+  color: #333;
+  font-size: 18px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 32px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 16.5px;
+  font-weight: 500;
+  color: #666;
+}
+
+/* 說明區縮小10% */
+.section {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+  line-height: 1.9;
+  font-size: 90%;
+}
+
+.section h2 {
+  font-size: 16.5px;
+  margin-top: 28px;
+  margin-bottom: 12px;
+}
+
+.section br {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.upload-box {
+  background: #5B7C99;
+  color: white;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  margin: 20px 0;
+}
+
+.upload-box:hover {
+  background: #2F4F66;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  border-radius: 8px;
+  border: 1px solid #EAEAEA;
+}
+
+.download-btn {
+  background: #6B8E73;
+  color: white;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+.download-btn:hover {
+  background: #3F5F4A;
+}
+
+.preview-item {
+  position: relative;
+  margin: 12px auto;
+  width: 80%;
+}
+
+.preview-item img {
+  width: 100%;
+  border-radius: 6px;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  text-align: center;
+  line-height: 26px;
+  cursor: pointer;
+}
+
+#drag-tip {
+  font-size: 14px;
+  color: #888;
+  margin-top: 10px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* footer */
+.footer {
+  text-align: center;
+  font-size: 13px;
+  color: #999;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  line-height: 1.6;
+}
+</style>
+</head>
+
+<body>
+
+<h1>把多張圖片，變成一張長圖</h1>
+
+<p class="subtitle">
+上傳多張圖片<br>
+一鍵合併下載
+</p>
+
+<input type="file" id="upload" multiple accept="image/*" style="display:none">
+
+<div class="upload-box" onclick="document.getElementById('upload').click()">
+↑ 上傳檔案
+</div>
+
+<input type="text" id="filename" placeholder="你可設定下載檔名，方便辨識（選填）">
+
+<div class="download-btn" onclick="downloadImage()">一鍵合併下載</div>
+
+<div id="drag-tip" class="hidden">
+✔ 預覽圖片（可拖曳排序 / 點擊右上角刪除）
+</div>
+
+<div id="preview"></div>
+
+<div class="section">
+
+<h2>🔻步驟</h2>
+✔ 上傳檔案<br>
+✔ 設定下載檔名(選填)<br>
+✔ 預覽圖片，可拖曳排序 / 點擊右上角刪除<br>
+✔ 一鍵合併下載<br>
+
+<h2>🔻適用場景</h2>
+✔ 報表整理<br>
+✔ IG圖文<br>
+✔ 蝦皮商品圖 / 電商圖<br>
+✔ Landing Page<br>
+✔ 活動報名頁
+
+<h2>🔻為什麼需要?</h2>
+瀏覽和整理都很花時間<br>
+圖片很多、又很零散，傳給別人Line會叮叮咚咚響不停<br><br>
+
+✔ 這個工具<br>
+✔ 把多張圖片合併成一張長圖<br>
+✔ 一次完成下載
+
+<h2>🔻功能</h2>
+✔ 多張JPG圖片合併<br>
+✔ 自動排列<br>
+✔ 一鍵下載<br>
+✔ 線上工具、完全免費、不需註冊!
+
+<h2>🔻效率提升!</h2>
+✔ 減少重複操作<br>
+✔ 提升工作效率
+
+<h2>🔻工具說明</h2>
+✔ 線上免費JPG圖片合併工具，可將多張圖片快速合併成長圖<br>
+✔ 無需下載軟體、不用加會員即可使用<br>
+✔ 適用報表整理、IG圖文、商品圖片、活動頁面、與Landing Page輸出
+
+</div>
+
+<div class="footer">
+© 2026 TextFlowTools<br>
+將多張JPG圖片合併為一張長圖｜免費線上工具
+</div>
+
+<script>
+const uploadInput = document.getElementById("upload");
+const preview = document.getElementById("preview");
+const dragTip = document.getElementById("drag-tip");
+const filenameInput = document.getElementById("filename");
+
+let imagesData = [];
+let dragIndex = null;
+
+uploadInput.addEventListener("change", function(e) {
+  imagesData = [];
+  preview.innerHTML = "";
+  dragTip.classList.remove("hidden");
+
+  let files = Array.from(e.target.files);
+
+  files.forEach(file => {
+    let reader = new FileReader();
+    reader.onload = function(event) {
+      imagesData.push({ src: event.target.result });
+      renderPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  e.target.value = "";
+});
+
+function renderPreview() {
+  preview.innerHTML = "";
+
+  imagesData.forEach((item, index) => {
+    let div = document.createElement("div");
+    div.className = "preview-item";
+    div.draggable = true;
+
+    div.innerHTML = `
+      <img src="${item.src}">
+      <div class="delete-btn">✕</div>
+    `;
+
+    div.querySelector(".delete-btn").onclick = () => {
+      imagesData.splice(index, 1);
+      renderPreview();
+    };
+
+    div.addEventListener("dragstart", () => dragIndex = index);
+    div.addEventListener("dragover", e => e.preventDefault());
+
+    div.addEventListener("drop", () => {
+      let temp = imagesData[dragIndex];
+      imagesData[dragIndex] = imagesData[index];
+      imagesData[index] = temp;
+      renderPreview();
+    });
+
+    preview.appendChild(div);
+  });
+}
+
+function downloadImage() {
+  if (imagesData.length === 0) return;
+
+  let images = [];
+  let loaded = 0;
+
+  imagesData.forEach((data, i) => {
+    let img = new Image();
+    img.onload = function() {
+      images[i] = img;
+      loaded++;
+      if (loaded === imagesData.length) draw(images);
+    };
+    img.src = data.src;
+  });
+
+  function draw(images) {
+    let canvas = document.createElement("canvas");
+    let ctx = canvas.getContext("2d");
+
+    let width = images[0].width;
+    let totalHeight = 0;
+
+    images.forEach(img => {
+      let scale = width / img.width;
+      totalHeight += img.height * scale;
+    });
+
+    canvas.width = width;
+    canvas.height = totalHeight;
+
+    let y = 0;
+    images.forEach(img => {
+      let scale = width / img.width;
+      let h = img.height * scale;
+      ctx.drawImage(img, 0, y, width, h);
+      y += h;
+    });
+
+    let link = document.createElement("a");
+    let name = filenameInput.value.trim() || "merged";
+    link.download = name + ".jpg";
+    link.href = canvas.toDataURL("image/jpeg", 0.95);
+    link.click();
+  }
+}
+</script>
+
+</body>
+</html>
